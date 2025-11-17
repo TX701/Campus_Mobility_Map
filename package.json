@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "vite build",
-    "deploy": "aws s3 sync ./dist s3://mobility-map-website --delete --acl public-read --exclude '*.html' --include '*.js' --content-type 'application/javascript'"
+    "deploy": "aws s3 sync ./dist/ s3://mobility-map-website/ --delete --acl public-read"
   },
   "dependencies": {
     "vite": "^2.5.0"
