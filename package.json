@@ -1,0 +1,10 @@
+{
+  "name": "course-project",
+  "version": "1.0.0",
+  "description": "courseproject",
+  "scripts": {
+    "deploy": "aws s3 sync ./dist s3://course-project-website --delete --acl public-read"
+  },
+  "author": "",
+  "license": "MIT"
+}
