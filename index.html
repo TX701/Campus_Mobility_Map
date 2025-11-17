@@ -6,13 +6,10 @@
     <title>My Website</title>
 </head>
 <body>
-    <h1>Welcome to My Website</h1>
-    <p>Click the button below to view the API key:</p>
-    <button onclick="showApiKey()">Show API Key</button>
-    <p id="api-response"></p>
+    <h1>edit website to work</h1>
 
     <script>
-        function showApiKey() {
+        function getAPI() {
             const apiKey = process.env.API_KEY;
             document.getElementById("api-response").innerText = apiKey ? `API Key: ${apiKey}` : 'API Key not available';
         }
