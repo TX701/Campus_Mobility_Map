@@ -27,7 +27,6 @@ jobs:
           npm install
           npm install vite@latest --save-dev
 
-
       - name: Inject API_KEY into .env file
         run: echo "VITE_API_KEY=${{ secrets.MAPBOX_TOKEN }}" >> .env
 
