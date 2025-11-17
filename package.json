@@ -3,11 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "vite build",
-    "deploy": "npm run deploy-html && npm run deploy-js && npm run deploy-css",
-    "deploy-html": "aws s3 sync ./dist s3://mobility-map-website --delete --acl public-read --exclude '*.js' --exclude '*.css' --content-type 'text/html'",
-    "deploy-js": "aws s3 sync ./dist s3://mobility-map-website --delete --acl public-read --exclude '*.html' --exclude '*.css' --content-type 'application/javascript'",
-    "deploy-css": "aws s3 sync ./dist s3://mobility-map-website --delete --acl public-read --exclude '*.html' --exclude '*.js' --content-type 'text/css'"
-  
+    "deploy": "aws s3 sync ./dist s3://mobility-map-website --delete --acl public-read --content-type 'application/javascript' --exclude '*.html'"
   },
   "dependencies": {
     "vite": "^2.5.0"
