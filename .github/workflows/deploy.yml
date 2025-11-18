@@ -27,7 +27,7 @@ jobs:
           npm install
 
       - name: Inject API_KEY into .env file
-        run: echo "VITE_API_KEY=${{ secrets.API_KEY }}" >> .env
+        run: echo "VITE_API_KEY=${{ secrets.MAPBOX_TOKEN }}" >> .env
 
       - name: Build Website
         run: npm run build
