@@ -42,6 +42,9 @@ jobs:
             --exclude "*.html" --exclude "*.css" --include "*.js" --content-type "application/javascript"
 
           aws s3 sync ./dist/ s3://mobility-map-website/ --delete --acl public-read \
+            --exclude "*.html" --exclude "*.js" --include "*.css" --content-type "text/css"
+
+          aws s3 sync ./dist/ s3://mobility-map-website/ --delete --acl public-read \
             --exclude "*.js" --exclude "*.css" --include "*.html" --content-type "text/html"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
