@@ -31,6 +31,8 @@ window.addEventListener("load", () => {
     webhookGet = import.meta.env.VITE_WEBHOOK_GET;
     webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
 
+    console.log(mapboxgl.accessToken, webhookGet, webhookPut);
+
     urlTestGet = `${urlBase}/webhook-test/${webhookGet}`; // testing the workflow
     urlProductionGet = `${urlBase}/webhook/${webhookGet}`;
 
