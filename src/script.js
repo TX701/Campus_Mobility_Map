@@ -30,8 +30,6 @@ window.addEventListener("load", () => {
     webhookGet = import.meta.env.VITE_WEBHOOK_GET;
     webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
 
-    console.log(mapboxgl.accessToken, webhookGet, webhookPut);
-
     urlTestGet = `${urlBase}/webhook-test/${webhookGet}`; // testing the workflow
     urlProductionGet = `${urlBase}/webhook/${webhookGet}`;
 
@@ -87,19 +85,19 @@ window.addEventListener("load", () => {
         });
     });
 
-    // fetch(urlProductionGet, {
-    //     headers: {
-    //         "ngrok-skip-browser-warning": true,
-    //     }}).then(response => {
-    //         console.log(response);
-    //         if (!response.ok) {
-    //         throw new Error(`Error: ${response.status}`);
-    //         }
-    //         return response.json();
-    //     }).then(data => {
-    //         constructPinPoints(data);
-    //     }).catch(error => {console.error("Error:", error);
-    // });
+    fetch(urlProductionGet, {
+        headers: {
+            "ngrok-skip-browser-warning": true,
+        }}).then(response => {
+            console.log(response);
+            if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+            }
+            return response.json();
+        }).then(data => {
+            constructPinPoints(data);
+        }).catch(error => {console.error("Error:", error);
+    });
 });
 
 const constructPinPoints = (data) => {
