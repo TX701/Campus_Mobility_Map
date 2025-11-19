@@ -1,5 +1,4 @@
 const urlBase = "https://n8n.oumobilitymap.com";
-mapboxgl.accessToken = "";
 let webhookGet = "";
 let webhookPut = "";
 
