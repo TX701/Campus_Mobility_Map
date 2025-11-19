@@ -103,12 +103,12 @@ window.addEventListener("load", () => {
 const constructPinPoints = (data) => {
   data.forEach(element => {
     console.log(element)
-    // let text = `Location: ${element.Location}\n\nDifficulty: ${element.Difficulty}\n\nDescription: ${element.Description}`
-    // const popup = new mapboxgl.Popup({ offset: 25 }).setText(text);
-    // let marker = new mapboxgl.Marker().setLngLat([element.Longitude, element.Latitude]).setPopup(popup).addTo(map);
-    // let svg = marker._element.getElementsByTagName("svg")[0];
-    // let path = svg.getElementsByTagName("path")[0];
-    // path.setAttribute("fill", colorArray[element.Difficulty - 1]);
+    let text = `Location: ${element.Location}\n\nDifficulty: ${element.Difficulty}\n\nDescription: ${element.Description}`
+    const popup = new mapboxgl.Popup({ offset: 25 }).setText(text);
+    let marker = new mapboxgl.Marker().setLngLat([element.Longitude, element.Latitude]).setPopup(popup).addTo(map);
+    let svg = marker._element.getElementsByTagName("svg")[0];
+    let path = svg.getElementsByTagName("path")[0];
+    path.setAttribute("fill", colorArray[element.Difficulty - 1]);
   });
 }
 
