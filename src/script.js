@@ -25,10 +25,16 @@ let formProductionPut = "";
 
 let colorArray = ["#92F797", "#D2F792", "#EFF792", "#F7D292", "#F79292"];
 
+let map = null;
+
 window.addEventListener("load", () => {
-    mapboxgl.accessToken = import.meta.env.VITE_API_KEY;
-    webhookGet = import.meta.env.VITE_WEBHOOK_GET;
-    webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
+    // mapboxgl.accessToken = import.meta.env.VITE_API_KEY;
+    // webhookGet = import.meta.env.VITE_WEBHOOK_GET;
+    // webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
+
+    mapboxgl.accessToken = `pk.eyJ1IjoicnN0dmRldiIsImEiOiJjbWc4OGhzcjgwNTNxMmtwdGhlMWR3eDN2In0.Arna-I1oQmDjHKX-tmUIyg`;
+    webhookGet = "829cc1f7-0682-42cc-975e-7024ea52e8ba";
+    webhookPut = "d5d431ee-f5e0-4502-b90e-0df98caa9ebd";
 
     urlTestGet = `${urlBase}/webhook-test/${webhookGet}`; // testing the workflow
     urlProductionGet = `${urlBase}/webhook/${webhookGet}`;
@@ -36,7 +42,7 @@ window.addEventListener("load", () => {
     formTestURLPut = `${urlBase}/webhook-test/${webhookPut}`;
     formProductionPut = `${urlBase}/webhook/${webhookPut}`;
 
-    const map = new mapboxgl.Map({
+    map = new mapboxgl.Map({
         container: "map",
         center: center, 
         style: "mapbox://styles/mapbox/standard",
@@ -103,23 +109,11 @@ window.addEventListener("load", () => {
 const constructPinPoints = (data) => {
   data.forEach(element => {
     let text = `Location: ${element.Location}\n\nDifficulty: ${element.Difficulty}\n\nDescription: ${element.Description}`;
-    let popup = new mapboxgl.Popup({ offset: 25 }).setText(text);
-    let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("width", "30");
-    svg.setAttribute("height", "30");
-    let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", "M0,0 L30,0 L30,30 L0,30 Z");
+    const popup = new mapboxgl.Popup({ offset: 25 }).setText(text);
+    let marker = new mapboxgl.Marker().setLngLat([element.Longitude, element.Latitude]).setPopup(popup).addTo(map);
+    let svg = marker._element.getElementsByTagName("svg")[0];
+    let path = svg.getElementsByTagName("path")[0];
     path.setAttribute("fill", colorArray[element.Difficulty - 1]);
-    svg.appendChild(path);
-    let marker = new mapboxgl.Marker({ element: svg }).setLngLat([element.Longitude, element.Latitude]).setPopup(popup).addTo(map);
-
-    // console.log(element)
-    
-    // const popup = new mapboxgl.Popup({ offset: 25 }).setText(text);
-    // let marker = new mapboxgl.Marker().setLngLat([element.Longitude, element.Latitude]).setPopup(popup).addTo(map);
-    // let svg = marker._element.getElementsByTagName("svg")[0];
-    // let path = svg.getElementsByTagName("path")[0];
-    // path.setAttribute("fill", colorArray[element.Difficulty - 1]);
   });
 }
 
