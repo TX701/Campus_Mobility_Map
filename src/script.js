@@ -75,11 +75,11 @@ window.addEventListener("load", () => {
         });
 
         map.addInteraction("places-mouseenter-interaction", {
-        type: "mouseenter",
-        target: { layerId: "places" },
-        handler: () => {
-            map.getCanvas().style.cursor = "pointer";
-        }
+            type: "mouseenter",
+            target: { layerId: "places" },
+            handler: () => {
+                map.getCanvas().style.cursor = "pointer";
+            }
         });
 
         map.on("contextmenu", (e) => {
@@ -87,19 +87,19 @@ window.addEventListener("load", () => {
         });
     });
 
-    fetch(urlProductionGet, {
-        headers: {
-            "ngrok-skip-browser-warning": true,
-        }}).then(response => {
-            console.log(response);
-            if (!response.ok) {
-            throw new Error(`Error: ${response.status}`);
-            }
-            return response.json();
-        }).then(data => {
-            constructPinPoints(data);
-        }).catch(error => {console.error("Error:", error);
-    });
+    // fetch(urlProductionGet, {
+    //     headers: {
+    //         "ngrok-skip-browser-warning": true,
+    //     }}).then(response => {
+    //         console.log(response);
+    //         if (!response.ok) {
+    //         throw new Error(`Error: ${response.status}`);
+    //         }
+    //         return response.json();
+    //     }).then(data => {
+    //         constructPinPoints(data);
+    //     }).catch(error => {console.error("Error:", error);
+    // });
 });
 
 const constructPinPoints = (data) => {
