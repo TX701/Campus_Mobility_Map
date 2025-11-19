@@ -39,8 +39,10 @@ jobs:
         run: |
           run: |
           aws s3 sync ./dist/ s3://mobility-map-website/ --delete --acl public-read \
-            --exclude "*.html" "*.css" --include "*.js" --content-type "application/javascript"
-          aws s3 sync ./dist/ s3://mobility-map-website/ --delete --acl public-read --exclude "*.js" --content-type "text/html"
+            --exclude "*.html" --exclude "*.css" --include "*.js" --content-type "application/javascript"
+
+          aws s3 sync ./dist/ s3://mobility-map-website/ --delete --acl public-read \
+            --exclude "*.js" --exclude "*.css" --include "*.html" --content-type "text/html"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
