@@ -102,13 +102,24 @@ window.addEventListener("load", () => {
 
 const constructPinPoints = (data) => {
   data.forEach(element => {
-    console.log(element)
-    let text = `Location: ${element.Location}\n\nDifficulty: ${element.Difficulty}\n\nDescription: ${element.Description}`
-    const popup = new mapboxgl.Popup({ offset: 25 }).setText(text);
-    let marker = new mapboxgl.Marker().setLngLat([element.Longitude, element.Latitude]).setPopup(popup).addTo(map);
-    let svg = marker._element.getElementsByTagName("svg")[0];
-    let path = svg.getElementsByTagName("path")[0];
+    let text = `Location: ${element.Location}\n\nDifficulty: ${element.Difficulty}\n\nDescription: ${element.Description}`;
+    let popup = new mapboxgl.Popup({ offset: 25 }).setText(text);
+    let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "30");
+    svg.setAttribute("height", "30");
+    let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "M0,0 L30,0 L30,30 L0,30 Z");
     path.setAttribute("fill", colorArray[element.Difficulty - 1]);
+    svg.appendChild(path);
+    let marker = new mapboxgl.Marker({ element: svg }).setLngLat([element.Longitude, element.Latitude]).setPopup(popup).addTo(map);
+
+    // console.log(element)
+    
+    // const popup = new mapboxgl.Popup({ offset: 25 }).setText(text);
+    // let marker = new mapboxgl.Marker().setLngLat([element.Longitude, element.Latitude]).setPopup(popup).addTo(map);
+    // let svg = marker._element.getElementsByTagName("svg")[0];
+    // let path = svg.getElementsByTagName("path")[0];
+    // path.setAttribute("fill", colorArray[element.Difficulty - 1]);
   });
 }
 
