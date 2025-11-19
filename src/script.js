@@ -28,13 +28,9 @@ let colorArray = ["#92F797", "#D2F792", "#EFF792", "#F7D292", "#F79292"];
 let map = null;
 
 window.addEventListener("load", () => {
-    // mapboxgl.accessToken = import.meta.env.VITE_API_KEY;
-    // webhookGet = import.meta.env.VITE_WEBHOOK_GET;
-    // webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
-
-    mapboxgl.accessToken = `pk.eyJ1IjoicnN0dmRldiIsImEiOiJjbWc4OGhzcjgwNTNxMmtwdGhlMWR3eDN2In0.Arna-I1oQmDjHKX-tmUIyg`;
-    webhookGet = "829cc1f7-0682-42cc-975e-7024ea52e8ba";
-    webhookPut = "d5d431ee-f5e0-4502-b90e-0df98caa9ebd";
+    mapboxgl.accessToken = import.meta.env.VITE_API_KEY;
+    webhookGet = import.meta.env.VITE_WEBHOOK_GET;
+    webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
 
     urlTestGet = `${urlBase}/webhook-test/${webhookGet}`; // testing the workflow
     urlProductionGet = `${urlBase}/webhook/${webhookGet}`;
