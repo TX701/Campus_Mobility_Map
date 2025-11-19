@@ -38,6 +38,55 @@ window.addEventListener("load", () => {
     formTestURLPut = `${urlBase}/webhook-test/${webhookPut}`;
     formProductionPut = `${urlBase}/webhook/${webhookPut}`;
 
+    const map = new mapboxgl.Map({
+        container: "map",
+        center: center, 
+        style: "mapbox://styles/mapbox/standard",
+        maxBounds: bounds,
+        config: {
+            basemap: {
+            // lightPreset: "dusk",
+            }
+        },
+        zoom: 16
+    });
+
+    map.on("load", () => {
+        map.addSource("Oakland", {
+            "type": "geojson",
+            "data": {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                    wholeWord, oakland
+                    ]
+                }
+            }
+        });
+
+        map.addLayer({
+            "id": "Oakland-Polygon",
+            "type": "fill",
+            "source": "Oakland",
+            "paint": {
+            "fill-color": "rgba(0, 0, 0, 0.6)",
+            }
+        });
+
+        map.addInteraction("places-mouseenter-interaction", {
+        type: "mouseenter",
+        target: { layerId: "places" },
+        handler: () => {
+            map.getCanvas().style.cursor = "pointer";
+        }
+        });
+
+        map.on("contextmenu", (e) => {
+        createForm(e);
+        });
+    });
+
     fetch(urlProductionGet, {
         headers: {
             "ngrok-skip-browser-warning": true,
@@ -132,52 +181,3 @@ const createForm = (e) => {
 
   setFormEventListeners();
 }
-
-const map = new mapboxgl.Map({
-  container: "map",
-  center: center, 
-  style: "mapbox://styles/mapbox/standard",
-  maxBounds: bounds,
-  config: {
-    basemap: {
-      // lightPreset: "dusk",
-    }
-  },
-  zoom: 16
-});
-
-map.on("load", () => {
-    map.addSource("Oakland", {
-        "type": "geojson",
-        "data": {
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                  wholeWord, oakland
-                ]
-            }
-        }
-    });
-
-    map.addLayer({
-        "id": "Oakland-Polygon",
-        "type": "fill",
-        "source": "Oakland",
-        "paint": {
-          "fill-color": "rgba(0, 0, 0, 0.6)",
-        }
-    });
-
-    map.addInteraction("places-mouseenter-interaction", {
-      type: "mouseenter",
-      target: { layerId: "places" },
-      handler: () => {
-          map.getCanvas().style.cursor = "pointer";
-      }
-    });
-
-    map.on("contextmenu", (e) => {
-      createForm(e);
-    });
-});
