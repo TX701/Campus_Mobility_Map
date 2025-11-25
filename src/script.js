@@ -31,7 +31,7 @@ window.addEventListener("load", () => {
     mapboxgl.accessToken = import.meta.env.VITE_API_KEY;
     webhookGet = import.meta.env.VITE_WEBHOOK_GET;
     webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
-
+    
     urlTestGet = `${urlBase}/webhook-test/${webhookGet}`; // testing the workflow
     urlProductionGet = `${urlBase}/webhook/${webhookGet}`;
 
@@ -83,15 +83,15 @@ window.addEventListener("load", () => {
         });
 
         map.on("contextmenu", (e) => {
-        createForm(e);
+          console.log("right click")
+          createForm(e);
         });
     });
 
-    fetch(urlProductionGet, {
-        headers: {
-            "ngrok-skip-browser-warning": true,
-        }}).then(response => {
-            console.log(response);
+    map.dragRotate.disable();
+    map.touchZoomRotate.disableRotation();
+
+    fetch(urlProductionGet).then(response => {
             if (!response.ok) {
             throw new Error(`Error: ${response.status}`);
             }
@@ -137,17 +137,6 @@ const formSample = (data) => {
   });
 }
 
-const formRemoveOnClick = () => {
-  document.querySelector("#point-form").remove();
-  document.querySelector("#mapContainer").removeEventListener("click", formRemoveOnClick);
-  document.querySelector("#mapContainer").removeEventListener("contextmenu", formRemoveOnClick);
-}
-
-const setFormEventListeners = () => {
-  document.querySelector("#mapContainer").addEventListener("click", formRemoveOnClick);
-  document.querySelector("#mapContainer").addEventListener("contextmenu", formRemoveOnClick);
-}
-
 const createForm = (e) => {
   const formHtml = `<form id="point-form">
                       <label for="difficulty">Ease:</label>
@@ -175,9 +164,22 @@ const createForm = (e) => {
     document.querySelector("#mapContainer").removeEventListener("contextmenu", formRemoveOnClick);
   });
 
+  console.log(form)
+
   form.style.position = "absolute";
   form.style.left = `${e.point.x}px`;
   form.style.top = `${e.point.y}px`;
 
   setFormEventListeners();
+}
+
+const setFormEventListeners = () => {
+  document.querySelector("#mapContainer").addEventListener("click", formRemoveOnClick);
+  document.querySelector("#mapContainer").addEventListener("contextmenu", formRemoveOnClick);
+}
+
+const formRemoveOnClick = () => {
+  document.querySelector("#point-form").remove();
+  document.querySelector("#mapContainer").removeEventListener("click", formRemoveOnClick);
+  document.querySelector("#mapContainer").removeEventListener("contextmenu", formRemoveOnClick);
 }
