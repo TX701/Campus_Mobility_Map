@@ -1,13 +1,13 @@
 const urlBase = "https://n8n.oumobilitymap.com";
 let webhookGet = "";
 let webhookPut = "";
+let menuOpen = false;
 
 let center = [-83.211269, 42.672954] // longitute, latitude
 const bounds = [
   [-83.22176640342447, 42.6522409656694], // southwest
   [-83.19089575201713, 42.68139348920886] // northeast 
 ];
-// let bounds = [[-83.1916, 42.6588], [-83.2237, 42.6795]];
 
 // large space that will be outside of our bounds, we use it so we can darken everything outside of oakland
 let wholeWord = [[-83.23946,42.6927258],[-83.238945,42.6925996],[-83.2387733,2.6394312],[-83.1568909,42.6389258],[-83.1570625,42.6941144],[-83.23946,42.6927258]];
@@ -27,7 +27,7 @@ let colorArray = ["#92F797", "#D2F792", "#EFF792", "#F7D292", "#F79292"];
 
 let map = null;
 
-window.addEventListener("load", () => {
+window.addEventListener("DOMContentLoaded", () => {
     mapboxgl.accessToken = import.meta.env.VITE_API_KEY;
     webhookGet = import.meta.env.VITE_WEBHOOK_GET;
     webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
@@ -82,9 +82,21 @@ window.addEventListener("load", () => {
             }
         });
 
+        map.on("click", (e) => {
+          if (menuOpen) {
+            menuOpen = false;
+            document.querySelector("#point-form").remove();
+          }
+        });
+
         map.on("contextmenu", (e) => {
-          console.log("right click")
-          createForm(e);
+          if (menuOpen) {
+            menuOpen = false;
+            document.querySelector("#point-form").remove();
+          } else {
+            menuOpen = true;
+            createForm(e);
+          }
         });
     });
 
@@ -138,48 +150,33 @@ const formSample = (data) => {
 }
 
 const createForm = (e) => {
-  const formHtml = `<form id="point-form">
-                      <label for="difficulty">Ease:</label>
-                      <input type="number" id="difficulty" name="difficulty" required>
-                      <br>
-                      <label for="location">Location:</label>
-                      <input type="text" id="location" name="location" required>
-                      <br>
-                      <label for="description">Description:</label>
-                      <input type="text" id="description" name="description" required>
-                      <br>
-                      <button type="submit">Submit</button>
-                      <input type="hidden" id="long" name="long" value="${e.lngLat.lng}">
-                      <input type="hidden" id="lat" name="lat" value="${e.lngLat.lat}">
-                    </form>`
-  
-  document.querySelector("body #container").insertAdjacentHTML("beforeend", formHtml);
-  const form = document.querySelector("#point-form");
+  const form = document.createElement("form");
+  form.id = "point-form";
+  form.innerHTML = `<label for="difficulty">Ease:</label>
+                    <input type="number" id="difficulty" name="difficulty" required>
+                    <br>
+                    <label for="location">Location:</label>
+                    <input type="text" id="location" name="location" required>
+                    <br>
+                    <label for="description">Description:</label>
+                    <input type="text" id="description" name="description" required>
+                    <br>
+                    <button type="submit">Submit</button>
+                    <input type="hidden" id="long" name="long" value="${e.lngLat.lng}">
+                    <input type="hidden" id="lat" name="lat" value="${e.lngLat.lat}">`;
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    formSample(new FormData(form));
-    form.remove();
-    document.querySelector("#mapContainer").removeEventListener("click", formRemoveOnClick);
-    document.querySelector("#mapContainer").removeEventListener("contextmenu", formRemoveOnClick);
-  });
-
-  console.log(form)
+  const container = document.querySelector("body #container");
 
   form.style.position = "absolute";
   form.style.left = `${e.point.x}px`;
   form.style.top = `${e.point.y}px`;
 
-  setFormEventListeners();
-}
+  container.appendChild(form);
 
-const setFormEventListeners = () => {
-  document.querySelector("#mapContainer").addEventListener("click", formRemoveOnClick);
-  document.querySelector("#mapContainer").addEventListener("contextmenu", formRemoveOnClick);
-}
-
-const formRemoveOnClick = () => {
-  document.querySelector("#point-form").remove();
-  document.querySelector("#mapContainer").removeEventListener("click", formRemoveOnClick);
-  document.querySelector("#mapContainer").removeEventListener("contextmenu", formRemoveOnClick);
-}
+    form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    formSample(new FormData(form));
+    form.remove();
+    menuOpen = false;
+  });
+};
