@@ -29,7 +29,8 @@ jobs:
       - name: Inject secret variables into .env file
         run: |
           echo "VITE_API_KEY=${{ secrets.MAPBOX_TOKEN }}" >> .env
-          echo "VITE_WEBHOOK_GET=${{ secrets.WEBHOOK_GET }}" >> .env
+          echo "VITE_WEBHOOK_GET_POINT=${{ secrets.WEBHOOK_GET }}" >> .env
+          echo "VITE_WEBHOOK_GET_EVENT=${{ secrets.WEBHOOK_GET_EVENT }}" >> .env
           echo "VITE_WEBHOOK_PUT=${{ secrets.WEBHOOK_PUT }}" >> .env
 
       - name: Build Website
