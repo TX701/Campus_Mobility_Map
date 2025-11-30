@@ -125,8 +125,8 @@ const constructPinPoints = (data) => {
   let colorArray = ["#92F797", "#D2F792", "#EFF792", "#F7D292", "#F79292"];
 
   data.forEach(element => {
-    let text = `Location: ${element.Location}\n\nDifficulty: ${element.Difficulty}\n\nDescription: ${element.Description}`;
-    const popup = new mapboxgl.Popup({ offset: 25 }).setText(text);
+    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(createUserPinDisplay(element));
+    popup._content.querySelector(".circle").style.background = `${colorArray[element.Difficulty - 1]}`;
     let marker = new mapboxgl.Marker().setLngLat([element.Longitude, element.Latitude]).setPopup(popup).addTo(map);
     let svg = marker._element.getElementsByTagName("svg")[0];
     let path = svg.getElementsByTagName("path")[0];
@@ -137,8 +137,7 @@ const constructPinPoints = (data) => {
 
 const constructEventPoints = (data) => {
   data.forEach(element => {
-    let text = `Title: ${element.Title}\n\nDate: ${element.Date}\n\nDescription: ${element.Description}\n\nStart: ${element.StartTime}\n\nEnd: ${element.EndTime}`;
-    const popup = new mapboxgl.Popup({ offset: 25 }).setText(text);
+    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(createEventPinDisplay(element));
     let marker = new mapboxgl.Marker().setLngLat([element.Longitude, element.Latitude]).setPopup(popup).addTo(map);
     let svg = marker._element.getElementsByTagName("svg")[0];
     let path = svg.getElementsByTagName("path")[0];
@@ -192,6 +191,28 @@ const formSample = (data) => {
   }).catch(error => {
     console.error("Error:", error);
   });
+}
+
+const createEventPinDisplay = (point) => {
+  return `<div class="event-point">
+            <div class="top-bar">
+              <h1>Ongoing event: ${point.Title}</h1>
+            </div> 
+            <p class="start">${point.StartTime} to ${point.EndTime}</p>
+            <p class="description">${point.Description}</p>
+          </div>`
+}
+
+const createUserPinDisplay = (point) => {
+  return `<div class="user-point">
+            <div class="top-bar">
+              <div class="circle">
+                <h2 class="difficulty">${point.Difficulty}</h2>
+              </div>
+              <h1 class="location">${point.Location}</h1>
+            </div>     
+            <p class="description">${point.Description}</p>
+          </div>`
 }
 
 const createForm = (e) => {
