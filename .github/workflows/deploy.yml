@@ -66,4 +66,4 @@ jobs:
             --branch-name main \
             --region us-east-2 \
             --source-url s3://mobility-map-website/ \
-            --source-url-type S3
+            --source-url-type BUCKET_PREFIX
