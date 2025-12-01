@@ -63,7 +63,7 @@ jobs:
         run: |
           aws amplify start-deployment \
             --app-id ${{ secrets.APP_ID }} \
-            --branch-name main \
+            --branch-name staging \
             --region us-east-2 \
             --source-url s3://mobility-map-website/ \
             --source-url-type BUCKET_PREFIX
