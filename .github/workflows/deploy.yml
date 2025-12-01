@@ -54,15 +54,4 @@ jobs:
 
       - name: Deploy to Amplify 
         run: |
-          APP_ID="${{ secrets.APP_ID }}"
-          BRANCH_NAME="main"
-
-          JOB_ID=$(aws amplify start-job --app-id $APP_ID --branch-name $BRANCH_NAME --job-type RELEASE | jq -r '.jobSummary.jobId')
-
-          JOB_STATUS=$(aws amplify get-job --app-id $APP_ID --branch-name $BRANCH_NAME --job-id $JOB_ID | jq -r '.job.summary.status')
-          echo "Amplify job finished with status: $JOB_STATUS"
-
-          if [ "$JOB_STATUS" != "SUCCEED" ]; then
-            echo "Amplify deployment failed."
-            exit 1
-          fi
+          aws amplify start-deployment --app-id ${{ secrets.APP_ID }} --branch-name main --source-url s3://mobility-map-website/ --source-url-type /
