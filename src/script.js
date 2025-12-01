@@ -16,7 +16,10 @@ let counterClockWise = [[-83.1946, 42.68031], [-83.20196, 42.68019], [-83.20196,
 let formProductionPut = "";
 let map = null; // map object
 let pointArray = []; // array of points
+
+let colorArray = ["#92F797", "#D2F792", "#EFF792", "#F7D292", "#F79292"]; // color to match difficulty
 let menuOpen = false;
+let difficultyValue = null;
 
 window.addEventListener("DOMContentLoaded", async () => {
     mapboxgl.accessToken = import.meta.env.VITE_API_KEY;
@@ -116,8 +119,6 @@ const getPoints = async (url) => { // get points from the given N8N url. will ei
 }
 
 const constructPinPoints = (data) => { // create popup on map corresponding to user points
-  let colorArray = ["#92F797", "#D2F792", "#EFF792", "#F7D292", "#F79292"]; // color to match difficulty
-
   data.forEach(element => {
     const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(createUserPinDisplay(element)); // sets the HTML
     popup._content.querySelector(".circle").style.background = `${colorArray[element.Difficulty - 1]}`; // sets the points color on the map
@@ -163,10 +164,12 @@ const fixOverLap = () => {
   });
 }
 
-const submitForm = (data) => {  // send form data to the N8N server
+const submitForm = (description) => {  // send form data to the N8N server
   let object = {};
-  data.forEach((value, key) => object[key] = value);
-  
+
+  object["description"] = description;
+  object["difficulty"] = difficultyValue;
+
   fetch(formProductionPut, {
     method: "POST",
     headers: {
@@ -207,17 +210,40 @@ const createUserPinDisplay = (point) => { // creates the HTML for the event poin
           </div>`
 }
 
+const updateFormUI = (difficulty) => {
+  difficultyValue = parseInt(difficulty.substring(1));
+
+  for (let i = 0; i < 5; i++) {
+    if (i < difficultyValue) {
+      document.querySelector(`#d${i + 1}`).style.background = `${colorArray[difficultyValue - 1]}`;
+    } else {
+      document.querySelector(`#d${i + 1}`).style.background = `#fff`;
+    }
+  }
+}
+
 const createForm = (e) => { // creates the HTML for the form. the form has the points latitude and longitude hidden within it
   const form = document.createElement("form");
   form.id = "point-form";
-  form.innerHTML = `<label for="difficulty">Ease:</label>
-                    <input type="number" id="difficulty" name="difficulty" required>
+  form.innerHTML = `<p>How difficult is this area to access or traverse: </p>
                     <br>
+                    <div class="difficulty">
+                      <h1>Easy</h1>
+                      <div class="difficulty-select" id="d1"></div>
+                      <div class="difficulty-select" id="d2"></div>
+                      <div class="difficulty-select" id="d3"></div>
+                      <div class="difficulty-select" id="d4"></div>
+                      <div class="difficulty-select" id="d5"></div>
+                      <h1>Hard</h1>
+                    </div>
+
                     <label for="location">Location:</label>
+                    <br>
                     <input type="text" id="location" name="location" required>
                     <br>
                     <label for="description">Description:</label>
-                    <input type="text" id="description" name="description" required>
+                    <br>
+                    <textarea name="text" id="description"></textarea>
                     <br>
                     <button type="submit">Submit</button>
                     <input type="hidden" id="long" name="long" value="${e.lngLat.lng}">
@@ -231,10 +257,19 @@ const createForm = (e) => { // creates the HTML for the form. the form has the p
 
   container.appendChild(form);
 
+  document.querySelectorAll(".difficulty-select").forEach(difficulty => {
+    difficulty.addEventListener("click", () => { 
+      updateFormUI(difficulty.id);
+    });
+  });
+
   form.addEventListener("submit", (e) => { // on form submit
     e.preventDefault();
-    submitForm(new FormData(form)); // send to the airtable
-    form.remove(); // remove the form from the DOM
-    menuOpen = false;
+    let descriptionText = document.querySelector("form #description").value;
+    if (difficultyValue != null || (descriptionText === "")) {
+      submitForm(new FormData(form), descriptionText); // send to the airtable
+      form.remove(); // remove the form from the DOM
+      menuOpen = false;
+    }
   });
 };
