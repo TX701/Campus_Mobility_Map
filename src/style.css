@@ -68,3 +68,17 @@ form {
 .user-point p, .event-point p {
     font-size: 1rem;
 }
+
+.pop-up {
+    z-index: 5;
+    background: #fff;
+
+    position: absolute;
+    right: 1%;
+    bottom: 1%;
+
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    border: 0.5px solid #000000;
+    border-radius: 0.5rem;
+}
