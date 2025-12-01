@@ -52,6 +52,44 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: "us-east-2"
 
-      - name: Deploy to Amplify 
+      - name: Deployment to Amplify
+        id: start-deploy
         run: |
-          aws amplify start-deployment --app-id ${{ secrets.APP_ID }} --branch-name main --source-url s3://mobility-map-website/ --source-url-type /
+          JOB_ID=$(aws amplify start-job \
+            --app-id ${{ secrets.APP_ID }} \
+            --branch-name main \
+            --job-type RELEASE \
+            --job-reason "Deploy from S3 bucket" \
+            --query 'jobSummary.jobId' \
+            --output text)
+
+          echo "job_id=$JOB_ID" >> $GITHUB_OUTPUT
+
+      - name: Finish Amplify Deployment
+        run: |
+          JOB_ID=${{ steps.start-deploy.outputs.job_id }}
+
+          echo "Waiting for Amplify job: $JOB_ID"
+
+          while true; do
+            STATUS=$(aws amplify get-job \
+              --app-id ${{ secrets.APP_ID }} \
+              --branch-name main \
+              --job-id $JOB_ID \
+              --query 'job.summary.status' \
+              --output text)
+
+            echo "Status: $STATUS"
+
+            if [[ "$STATUS" == "SUCCEED" ]]; then
+              echo "Amplify Deployment Successful!"
+              exit 0
+            fi
+
+            if [[ "$STATUS" == "FAILED" ]]; then
+              echo "Amplify Deployment FAILED!"
+              exit 1
+            fi
+
+            sleep 10
+          done
