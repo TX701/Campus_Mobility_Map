@@ -21,79 +21,95 @@ let colorArray = ["#92F797", "#D2F792", "#EFF792", "#F7D292", "#F79292"]; // col
 let menuOpen = false;
 let difficultyValue = null;
 
+const setUpWelcomeScreen = () => { // show an explaination message if its the users first time on the website
+  let cookies = document.cookie;
+  console.log(cookies);
+  if (cookies === "") { // if it is the users first time on the website
+    document.cookie = `visited=true`; // set a cookie named visited to true
+
+    document.querySelector("#enter-website").addEventListener("click", () => {
+        document.querySelector(".welcome-message").remove();
+    });
+  } else {
+    document.querySelector(".welcome-message").remove(); // if it is not the users first time dont show the welcome message
+  }
+}
+
 window.addEventListener("DOMContentLoaded", async () => {
-    mapboxgl.accessToken = import.meta.env.VITE_API_KEY;
-    let webhookPointGet = import.meta.env.VITE_WEBHOOK_GET_POINT;
-    let webhookEventGet = import.meta.env.VITE_WEBHOOK_GET_EVENT;
-    let webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
-    
-    let urlProductionPointGet = `${urlBase}/webhook/${webhookPointGet}`; // N8N URL for getting user points
-    let urlProductionEventGet = `${urlBase}/webhook/${webhookEventGet}`; // N8N URL for getting event points
-    formProductionPut = `${urlBase}/webhook/${webhookPut}`; // N8N URL for putting form points into the table
+  setUpWelcomeScreen();
 
-    map = new mapboxgl.Map({
-        container: "map",
-        center: center, 
-        style: "mapbox://styles/mapbox/standard",
-        maxBounds: bounds, // prevent the user from looking outside of oakland
-        zoom: 16
-    });
+  mapboxgl.accessToken = import.meta.env.VITE_API_KEY;
+  let webhookPointGet = import.meta.env.VITE_WEBHOOK_GET_POINT;
+  let webhookEventGet = import.meta.env.VITE_WEBHOOK_GET_EVENT;
+  let webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
+  
+  let urlProductionPointGet = `${urlBase}/webhook/${webhookPointGet}`; // N8N URL for getting user points
+  let urlProductionEventGet = `${urlBase}/webhook/${webhookEventGet}`; // N8N URL for getting event points
+  formProductionPut = `${urlBase}/webhook/${webhookPut}`; // N8N URL for putting form points into the table
 
-    map.on("load", () => {
-        map.addSource("Oakland", {
-            "type": "geojson",
-            "data": {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [
-                      wholeWord, oakland // the map is only slightly bigger than oakland to avoid uneeded rendering
-                    ]
-                }
-            }
-        });
+  map = new mapboxgl.Map({
+      container: "map",
+      center: center, 
+      style: "mapbox://styles/mapbox/standard",
+      maxBounds: bounds, // prevent the user from looking outside of oakland
+      zoom: 16
+  });
 
-        map.addLayer({ // places a dark overlay on the map outside of oakland
-            "id": "Oakland-Polygon",
-            "type": "fill",
-            "source": "Oakland",
-            "paint": {
-            "fill-color": "rgba(0, 0, 0, 0.6)",
-            }
-        });
-
-        map.addInteraction("places-mouseenter-interaction", {
-            type: "mouseenter",
-            target: { layerId: "places" },
-            handler: () => {
-                map.getCanvas().style.cursor = "pointer";
-            }
-        });
-
-        map.on("click", () => { // on left click, if a form is open, close it
-          if (menuOpen) {
-            menuOpen = false; 
-            document.querySelector("#point-form").remove(); // remove the form
+  map.on("load", () => {
+      map.addSource("Oakland", {
+          "type": "geojson",
+          "data": {
+              "type": "Feature",
+              "geometry": {
+                  "type": "Polygon",
+                  "coordinates": [
+                    wholeWord, oakland // the map is only slightly bigger than oakland to avoid uneeded rendering
+                  ]
+              }
           }
-        });
+      });
 
-        map.on("contextmenu", (e) => { // on right click, if a form is open, close it. if a form is not open, create one
-          if (menuOpen) {
-            menuOpen = false;
-            document.querySelector("#point-form").remove(); // remove the form
-          } else {
-            menuOpen = true;
-            createForm(e); // create new form
+      map.addLayer({ // places a dark overlay on the map outside of oakland
+          "id": "Oakland-Polygon",
+          "type": "fill",
+          "source": "Oakland",
+          "paint": {
+          "fill-color": "rgba(0, 0, 0, 0.6)",
           }
-        });
-    });
+      });
 
-    map.dragRotate.disable(); // dont allow the user to change the z perspective of the map or rotation
-    map.touchZoomRotate.disableRotation();
+      map.addInteraction("places-mouseenter-interaction", {
+          type: "mouseenter",
+          target: { layerId: "places" },
+          handler: () => {
+              map.getCanvas().style.cursor = "pointer";
+          }
+      });
 
-    constructPinPoints(await getPoints(urlProductionPointGet)); // create pin points from airtable
-    constructEventPoints(await getPoints(urlProductionEventGet)); // create event points from airtable
-    fixOverLap(); // adjust for if two points have the same latitude and longitude
+      map.on("click", () => { // on left click, if a form is open, close it
+        if (menuOpen) {
+          menuOpen = false; 
+          document.querySelector("#point-form").remove(); // remove the form
+        }
+      });
+
+      map.on("contextmenu", (e) => { // on right click, if a form is open, close it. if a form is not open, create one
+        if (menuOpen) {
+          menuOpen = false;
+          document.querySelector("#point-form").remove(); // remove the form
+        } else {
+          menuOpen = true;
+          createForm(e); // create new form
+        }
+      });
+  });
+
+  map.dragRotate.disable(); // dont allow the user to change the z perspective of the map or rotation
+  map.touchZoomRotate.disableRotation();
+
+  constructPinPoints(await getPoints(urlProductionPointGet)); // create pin points from airtable
+  constructEventPoints(await getPoints(urlProductionEventGet)); // create event points from airtable
+  fixOverLap(); // adjust for if two points have the same latitude and longitude
 });
 
 const formResponse = (text) => { // if theres time add a 5 second pop up telling the user their point was added successfully

@@ -1,7 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+
+    font-family: "Roboto", sans-serif;
 }
 
 #mapContainer {
@@ -69,6 +73,53 @@ form button {
     border-radius: 0.25rem;
     margin-top: 1rem;
     height: 2rem;
+    background: #7f7dff;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.welcome-message {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 40vw;
+    gap: 1.5rem;
+
+    position: fixed;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+
+    border: 0.25px solid #000000;
+    border-radius: 0.5rem ;
+    padding: 1rem;
+    background: #fafafa;
+}
+
+.welcome-message .right {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 1rem;
+
+    font-size: 1rem;
+}
+
+.welcome-message .right li {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.welcome-message button {
+    margin-top: 3rem;
+
+    border: 0.25px solid #000000;
+    border-radius: 0.25rem;
+    margin-top: 1rem;
+    height: 3rem;
+    width: 50%;
     background: #7f7dff;
     color: #fff;
     font-size: 1rem;

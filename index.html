@@ -8,9 +8,30 @@
     <link rel="stylesheet" href="./src/style.css">
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js"></script>
+    <link rel="shortcut icon" href="./src/favicon.png" type="image/x-icon">
 </head>
   <body>
     <div id="container">
+      <div class="welcome-message">
+        <div class="left">
+          <h1>Welcome</h1>
+        </div>
+        <div class="right">
+          <p>This map is designed to be a collaborative accessibilty map for Oakland University.</p>
+          <p>You can click on the pin points on the map to read about an area an it's accessibilty.</p>
+          <ul>
+            <li>Colors correspond to the difficulty, red for hard to access and green for easy to access.</li>
+            <li>Purple points mark where events are currently happening. Be mindful that an event happening could lead to more congestion and traffic.</li>
+          </ul>
+          <p>You can right click on the map to add a point yourself.</p>
+          <ul>
+            <li>Please add anything you think is helpful to campus accessibility.</li>
+            <li>You could add points marking if doors are currently not working or if roads are currently icey.</li>
+            <li>If you make a point about accessibility, consider adding tips on how to avoid that roadblock, if you know any. For example if it is hard to access a building through a certain door, maybe suggest another one.</li>
+          </ul>
+        </div>
+        <button id="enter-website">Enter website</button>
+      </div>
       <div id="mapContainer">
         <div id="map"></div>
       </div>
