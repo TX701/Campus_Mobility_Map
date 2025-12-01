@@ -56,6 +56,7 @@ jobs:
         id: start-deploy
         run: |
           JOB_ID=$(aws amplify start-job \
+            --region us-east-2 \
             --app-id ${{ secrets.APP_ID }} \
             --branch-name main \
             --job-type RELEASE \
@@ -73,6 +74,7 @@ jobs:
 
           while true; do
             STATUS=$(aws amplify get-job \
+              --region us-east-2 \
               --app-id ${{ secrets.APP_ID }} \
               --branch-name main \
               --job-id $JOB_ID \
