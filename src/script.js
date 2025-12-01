@@ -1,5 +1,6 @@
 const urlBase = "https://n8n.oumobilitymap.com";
 const center = [-83.211269, 42.672954] // longitute, latitude
+const offsetFromPointToForm = 100;
 
 const bounds = [
   [-83.22176640342447, 42.6522409656694], // southwest
@@ -89,6 +90,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         if (menuOpen) {
           menuOpen = false; 
           document.querySelector("#point-form").remove(); // remove the form
+          document.querySelector("#temp-point").remove(); // remove the temporary point
         }
       });
 
@@ -96,6 +98,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         if (menuOpen) {
           menuOpen = false;
           document.querySelector("#point-form").remove(); // remove the form
+          document.querySelector("#temp-point").remove(); // remove the temporary point
         } else {
           menuOpen = true;
           createForm(e); // create new form
@@ -110,14 +113,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   constructEventPoints(await getPoints(urlProductionEventGet)); // create event points from airtable
   fixOverLap(); // adjust for if two points have the same latitude and longitude
 });
-
-const formResponse = (text) => { // if theres time add a 5 second pop up telling the user their point was added successfully
-  const HTML = `<div class="pop-up"><h1>${text}</h1></div>`;
-  setTimeout(() => {
-    document.querySelector("#container").insertAdjacentHTML("beforeend", HTML);
-  }, 5000);
-  document.querySelector("#container .pop-up").remove();
-}
 
 const getPoints = async (url) => { // get points from the given N8N url. will either be event points or user points
   return fetch(url).then(response => {
@@ -179,11 +174,49 @@ const fixOverLap = () => {
   });
 }
 
+const fadeOut = () => { // modified from https://stackoverflow.com/questions/6121203/how-to-do-fade-in-and-fade-out-with-javascript-and-css
+  const element = document.querySelector("#container .pop-up");
+    let op = 1;
+    let timer = setInterval( () => {
+        if (op <= 0.1){
+            clearInterval(timer);
+            document.querySelector("#container .pop-up").remove();
+        }
+        element.style.opacity = op;
+        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op -= op * 0.1;
+    }, 50);
+}
+
+const fadeIn = () => { // modified from https://stackoverflow.com/questions/6121203/how-to-do-fade-in-and-fade-out-with-javascript-and-css
+  const element = document.querySelector("#container .pop-up");
+    let op = 0.1;
+    let timer = setInterval( () => {
+        if (op >= 1){
+            clearInterval(timer);
+        }
+        element.style.opacity = op;
+        element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+        op += op * 0.1;
+    }, 10);
+}
+
+const getResponseHtml = (text) => { // temporary pop up to let the user know if their point submission was successful
+  const HTML = `<div class="pop-up"><h1>${text}</h1></div>`;
+
+  document.querySelector("#container").insertAdjacentHTML("beforeend", HTML);
+  fadeIn();
+
+  setTimeout(() => {
+    fadeOut();
+  }, 4000);
+}
+
 const submitForm = (data, description) => {  // send form data to the N8N server
   let object = {};
 
-  object["description"] = description;
-  object["difficulty"] = difficultyValue;
+  object["description"] = description; // add description since it was technically not part of the form itself
+  object["difficulty"] = difficultyValue; // add difficulty since it was technically not part of the form itself
   
   data.forEach((value, key) => object[key] = value);
 
@@ -200,8 +233,11 @@ const submitForm = (data, description) => {  // send form data to the N8N server
     return response.json();
   }).then(data => {
     console.log("data sent");
+    getResponseHtml("Data sent successfully."); // inform the user that their data was sent
+
   }).catch(error => {
     console.error("Error:", error);
+    getResponseHtml("There was an error and your data was not sent."); // inform the user that their data was not sent
   });
 }
 
@@ -227,19 +263,44 @@ const createUserPinDisplay = (point) => { // creates the HTML for the event poin
           </div>`
 }
 
-const updateFormUI = (difficulty) => {
+const updateFormUI = (difficulty) => { // changes the colors of the difficult circles to match the one the user selected
   difficultyValue = parseInt(difficulty.substring(1));
 
-  for (let i = 0; i < 5; i++) {
-    if (i < difficultyValue) {
-      document.querySelector(`#d${i + 1}`).style.background = `${colorArray[difficultyValue - 1]}`;
-    } else {
-      document.querySelector(`#d${i + 1}`).style.background = `#fff`;
+  for (let i = 0; i < 5; i++) { // for all bubbles
+    if (i < difficultyValue) { // if the value is less than or equal to the difficult the user selected (this is zero indexed but the point is given in nonzero index- hence < instead of <=)
+      document.querySelector(`#d${i + 1}`).style.background = `${colorArray[difficultyValue - 1]}`; // set the background color to the selected difficulty
+    } else { // if value is more than the difficulty value 
+      document.querySelector(`#d${i + 1}`).style.background = `#fff`; // set the background color to white
     }
   }
 }
 
+const setFormPositioning = (form, x, y) => {
+  let mapBounds = mapContainer.getBoundingClientRect();
+  let formRect = form.getBoundingClientRect();
+
+  form.style.top = `${y - (formRect.height / 2)}px`; // forms y center will be y
+
+  if (x < (mapBounds.width / 2)) { // x is on the left half
+    form.style.left = `${x + offsetFromPointToForm}px`; // form will be to the right of the point
+  } else { // x is on the right half
+    form.style.left = `${x - formRect.width - offsetFromPointToForm}px`; // form will be to the left of the point
+  }
+
+  let updatedFormRect = form.getBoundingClientRect();
+
+  if (updatedFormRect.top < 0) { // if the top of the form is off the page
+    form.style.top = `${y}px`; // the top of the form will be y
+  }
+
+  if (mapBounds.height < updatedFormRect.bottom) { // if the bottom of the form is off the page
+    form.style.top = `${y - updatedFormRect.height}px`; // the bottom of the form will be y
+  }
+}
+
 const createForm = (e) => { // creates the HTML for the form. the form has the points latitude and longitude hidden within it
+  let marker = new mapboxgl.Marker().setLngLat([e.lngLat.lng, e.lngLat.lat]).addTo(map); // add a marker where the user wants to add a point
+  marker._element.id = "temp-point";
   const form = document.createElement("form");
   form.id = "point-form";
   form.innerHTML = `<p>How difficult is this area to access or traverse: </p>
@@ -269,10 +330,10 @@ const createForm = (e) => { // creates the HTML for the form. the form has the p
   const container = document.querySelector("body #container");
 
   form.style.position = "absolute"; // place the form where the user clicks their mouse
-  form.style.left = `${e.point.x}px`;
-  form.style.top = `${e.point.y}px`;
 
   container.appendChild(form);
+
+  setFormPositioning(form, e.point.x, e.point.y);
 
   document.querySelectorAll(".difficulty-select").forEach(difficulty => {
     difficulty.addEventListener("click", () => { 
@@ -286,6 +347,7 @@ const createForm = (e) => { // creates the HTML for the form. the form has the p
     if (difficultyValue != null || (descriptionText === "")) {
       submitForm(new FormData(form), descriptionText); // send to the airtable
       form.remove(); // remove the form from the DOM
+      document.querySelector("#temp-point").remove(); // remove the temporary point
       menuOpen = false;
     }
   });

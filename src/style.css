@@ -60,6 +60,7 @@ form input {
     border: 0.25px solid #000000;
     height: 2rem;
     background: #e2e2e2;
+    font-family: "Roboto", sans-serif;
 }
 
 form textarea {
@@ -155,6 +156,11 @@ form button {
     font-size: 0.60rem;
 }
 
+
+.top-bar .location {
+    max-width: 10rem;
+}
+
 .circle {
     border-radius: 50%;
     height: 2.5rem;
@@ -186,4 +192,6 @@ form button {
     padding: 0.5rem;
     border: 0.5px solid #000000;
     border-radius: 0.5rem;
+
+    opacity: 0.0;
 }
