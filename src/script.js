@@ -25,7 +25,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     mapboxgl.accessToken = import.meta.env.VITE_API_KEY;
     let webhookPointGet = import.meta.env.VITE_WEBHOOK_GET_POINT;
     let webhookEventGet = import.meta.env.VITE_WEBHOOK_GET_EVENT;
-    webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
+    let webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
     
     let urlProductionPointGet = `${urlBase}/webhook/${webhookPointGet}`; // N8N URL for getting user points
     let urlProductionEventGet = `${urlBase}/webhook/${webhookEventGet}`; // N8N URL for getting event points
