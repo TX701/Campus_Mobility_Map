@@ -23,7 +23,6 @@ let difficultyValue = null;
 
 const setUpWelcomeScreen = () => { // show an explaination message if its the users first time on the website
   let cookies = document.cookie;
-  console.log(cookies);
   if (cookies === "") { // if it is the users first time on the website
     document.cookie = `visited=true`; // set a cookie named visited to true
 
