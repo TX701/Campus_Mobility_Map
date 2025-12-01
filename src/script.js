@@ -164,11 +164,13 @@ const fixOverLap = () => {
   });
 }
 
-const submitForm = (description) => {  // send form data to the N8N server
+const submitForm = (data, description) => {  // send form data to the N8N server
   let object = {};
 
   object["description"] = description;
   object["difficulty"] = difficultyValue;
+  
+  data.forEach((value, key) => object[key] = value);
 
   fetch(formProductionPut, {
     method: "POST",
