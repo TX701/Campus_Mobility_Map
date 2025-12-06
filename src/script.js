@@ -42,7 +42,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   let webhookPointGet = import.meta.env.VITE_WEBHOOK_GET_POINT;
   let webhookEventGet = import.meta.env.VITE_WEBHOOK_GET_EVENT;
   let webhookPut = import.meta.env.VITE_WEBHOOK_PUT;
-  
+                          
   let urlProductionPointGet = `${urlBase}/webhook/${webhookPointGet}`; // N8N URL for getting user points
   let urlProductionEventGet = `${urlBase}/webhook/${webhookEventGet}`; // N8N URL for getting event points
   formProductionPut = `${urlBase}/webhook/${webhookPut}`; // N8N URL for putting form points into the table
@@ -129,6 +129,7 @@ const getPoints = async (url) => { // get points from the given N8N url. will ei
 }
 
 const constructPinPoints = (data) => { // create popup on map corresponding to user points
+  console.log(data)
   data.forEach(element => {
     const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(createUserPinDisplay(element)); // sets the HTML
     popup._content.querySelector(".circle").style.background = `${colorArray[element.Difficulty - 1]}`; // sets the points color on the map
